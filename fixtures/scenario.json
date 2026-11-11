@@ -1,0 +1,24 @@
+{
+  "pages": [
+    {"id": "north", "name": "Example North", "url": "https://north.example/about", "file": "north.html"},
+    {"id": "south", "name": "Example South", "url": "https://south.example/about", "file": "south.html"},
+    {"id": "south", "name": "Example South", "url": "https://south.example/about", "file": "south.html"}
+  ],
+  "profiles": {
+    "north": {
+      "score": 92,
+      "claims": {
+        "business_type": {"url": "https://north.example/about", "quote": "We distribute commercial lighting to trade buyers."},
+        "operating_region": {"url": "https://north.example/about", "quote": "We operate in the fictional North Region."}
+      }
+    },
+    "south": {
+      "score": 92,
+      "claims": {
+        "business_type": {"url": "https://south.example/about", "quote": "We distribute commercial lighting to trade buyers."},
+        "operating_region": {"url": "https://south.example/about", "quote": "We operate in the fictional South Region."}
+      }
+    }
+  },
+  "confirmed_channels": ["south"]
+}

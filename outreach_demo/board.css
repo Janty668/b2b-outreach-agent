@@ -1,0 +1,37 @@
+:root {
+  color-scheme: light;
+  font: 16px/1.45 "Geist", "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+  background: #f4f6fa;
+  color: #182333;
+}
+* { box-sizing: border-box; }
+body { margin: 0; }
+main { width: min(100% - 48px, 1100px); margin: 34px auto; }
+.context { margin: 0; color: #374b63; font-size: .88rem; font-weight: 650; }
+.context span { float: right; color: #53667d; font-weight: 500; }
+h1 { font-size: clamp(2rem, 5vw, 3rem); line-height: 1.1; margin: 16px 0 4px; letter-spacing: -.055em; }
+.summary { margin: 0 0 22px; color: #48596d; }
+section { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
+article { background: #fff; border: 1px solid #dce4ef; border-radius: 16px; padding: 20px 22px; }
+header, .claim { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+h2 { margin: 0; font-size: 1.35rem; letter-spacing: -.025em; }
+h3 { font-size: .78rem; margin: 14px 0 6px; color: #48596d; }
+.score { color: #48596d; margin: 3px 0; font-size: .9rem; }
+.status { border-radius: 999px; padding: 4px 10px; font-size: .76rem; font-weight: 700; background: #eaf0f8; }
+[data-status="NEEDS_REVIEW"] .status { background: #fff2d7; color: #754004; }
+[data-status="DRAFT_READY"] .status { background: #e5f5ed; color: #135737; }
+.evidence, .events { margin: 0; padding: 0; list-style: none; }
+.evidence li { padding: 7px 0; border-top: 1px solid #e6ebf2; font-size: .86rem; }
+.evidence p, .draft p { margin: 2px 0; overflow-wrap: anywhere; }
+.evidence small { color: #53667d; overflow-wrap: anywhere; }
+.verified { color: #176740; }
+.missing { color: #83460b; }
+.events { display: flex; flex-wrap: wrap; gap: 4px 9px; color: #475e7b; font-size: .75rem; }
+.events li + li::before { content: "→"; margin-right: 9px; color: #5a6e87; }
+.draft { margin-top: 12px; border-left: 3px solid #1e8257; background: #edf8f3; padding: 7px 10px; font-size: .85rem; }
+.draft h3 { margin: 0; color: #135737; }
+@media (max-width: 660px) {
+  main { width: calc(100% - 24px); margin: 20px auto; }
+  .context span { display: block; float: none; }
+  section { grid-template-columns: 1fr; }
+}

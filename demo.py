@@ -1,78 +1,41 @@
-"""Offline portfolio simulation with fictional claims and no external services."""
+"""Run the bundled scenario and export an offline review board."""
 
+import argparse
+from contextlib import closing
+import json
+from pathlib import Path
 import sqlite3
-from dataclasses import dataclass
-from typing import Optional
+
+from outreach_demo.board import export_board
+from outreach_demo.ledger import store_run
+from outreach_demo.source import collect_pages
+from outreach_demo.workflow import evaluate
 
 
-@dataclass(frozen=True)
-class Candidate:
-    name: str
-    model_score: int
-    source_text: str
-    proposed_excerpt: str
+FIXTURES = Path(__file__).resolve().parent / "fixtures"
 
 
-def assess_candidate(db: sqlite3.Connection, candidate: Candidate) -> str:
-    # 模型分数只用于展示。状态取决于引文能否在来源中复核。
-    excerpt = candidate.proposed_excerpt.strip()
-    status = "QUALIFIED" if excerpt and excerpt in candidate.source_text else "NEEDS_REVIEW"
-    with db:
-        db.execute(
-            "INSERT INTO candidates (name, status) VALUES (?, ?)",
-            (candidate.name, status),
-        )
-    return status
-
-
-def record_channel_check(db: sqlite3.Connection, name: str, confirmed: bool) -> None:
-    # 这里只接收虚构的核验结果，演示渠道状态与资格状态相互独立。
-    with db:
-        db.execute(
-            "UPDATE candidates SET channel_confirmed = ? WHERE name = ?",
-            (confirmed, name),
-        )
-
-
-def prepare_draft(db: sqlite3.Connection, name: str) -> Optional[str]:
-    row = db.execute(
-        "SELECT status, channel_confirmed FROM candidates WHERE name = ?", (name,)
-    ).fetchone()
-    if row != ("QUALIFIED", 1):
-        return None
-
-    return f"Hi {name} team, who handles sourcing for your lighting range?"
+def run(output: Path) -> None:
+    scenario = json.loads((FIXTURES / "scenario.json").read_text(encoding="utf-8"))
+    candidates = collect_pages(FIXTURES, scenario["pages"])
+    confirmed = set(scenario["confirmed_channels"])
+    decisions = {
+        candidate_id: evaluate(candidate_id, candidate, scenario["profiles"][candidate_id], confirmed)
+        for candidate_id, candidate in candidates.items()
+    }
+    output.mkdir(parents=True, exist_ok=True)
+    with closing(sqlite3.connect(output / "ledger.sqlite3")) as db:
+        store_run(db, decisions)
+        export_board(db, output / "index.html", len(scenario["pages"]))
+        for name, score, status in db.execute("SELECT name, score, status FROM candidates ORDER BY id"):
+            print(f"{name} | model score {score} | {status}")
+    print(f"Review board: {output / 'index.html'}")
 
 
 def main() -> None:
-    candidates = (
-        Candidate("Example North", 92, "Trade lighting distributor.", "Based in Example City."),
-        Candidate(
-            "Example South",
-            92,
-            "Trade lighting distributor. Based in Example City.",
-            "Based in Example City.",
-        ),
-    )
-    with sqlite3.connect(":memory:") as db:
-        db.execute(
-            """
-            CREATE TABLE candidates (
-                name TEXT PRIMARY KEY,
-                status TEXT NOT NULL,
-                channel_confirmed INTEGER NOT NULL DEFAULT 0
-            )
-            """
-        )
-        for candidate in candidates:
-            status = assess_candidate(db, candidate)
-            print(f"{candidate.name} | model score {candidate.model_score} | {status}")
-
-        qualified = candidates[1].name
-        print(f"{qualified} | channel unchecked | draft: {prepare_draft(db, qualified)}")
-        record_channel_check(db, qualified, confirmed=True)
-        print(f"{qualified} | channel confirmed (simulated) | draft ready for human review")
-        print(prepare_draft(db, qualified))
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--output", type=Path, default=Path("demo-output"))
+    run(parser.parse_args().output)
 
 
 if __name__ == "__main__":
