@@ -4,13 +4,13 @@
 
 Janty · AI 产品与 Agent 工作流 · [English](README.md)
 
-在跨境照明拓客里，模型可能把一家企业判为高潜客户，但销售还需要知道它在哪里经营、是否做批发，以及公开的联系方式能否实际使用。我把这些业务判断做成了 Python 工作流里的证据校验与状态流转。
+在跨境照明拓客里，模型可能把一家企业判为高潜客户，但销售还需要知道它在哪里经营、是否做批发，以及公开的联系方式能否实际使用。然后本菜鸡就尝试用codex辅助理解我的拆解分析，把这些业务判断做成了 Python 工作流里的证据校验与状态流转。
 
 [![点击观看 60 秒演示：同样的模型评分，不同的推进结果](docs/demo-preview.png)](docs/demo.mp4)
 
 [60 秒演示 · 中英双语字幕](docs/demo.mp4)
 
-## 我怎么设计原型
+## 我怎么设计原型的捏？
 
 1. **采集与去重。** 归并来自公开渠道的企业候选，保留来源。
 2. **模型提议，证据校验。** LLM 生成画像与引文，系统对照来源。关键信息缺失时，候选进入待复核。
@@ -36,8 +36,10 @@ python3 demo.py
 | Example North | 指定来源没有经营地引文 | 跳过核验 | 待补证据 |
 | Example South | 指定来源包含两条必需引文 | 模拟确认 | 草稿待人工审核 |
 
-本地看板从 `demo-output/ledger.sqlite3` 读回状态、引文和草稿。再次运行会刷新快照，也可以用 `--output ./another-folder` 把本次结果保存到其他目录。
+本地看板从 `demo-output/ledger.sqlite3` 读回状态、引文和草稿。再次运行会刷新快照，当然也可以用 `--output ./another-folder` 把本次结果保存到其他目录。
 
 展示版仅需 Python 3.8+ 标准库，依次运行[本地网页读取和去重](outreach_demo/source.py)、[画像回放与证据核验](outreach_demo/workflow.py)、[SQLite 状态入库](outreach_demo/ledger.py)和[本地看板生成](outreach_demo/board.py)。模型画像与渠道核验结果来自[预置场景](fixtures/scenario.json)。原型的真实平台验收使用 Notion 状态镜像与 WhatsApp 人工监督草稿。
 
-我在找 AI 产品与 Agent 工作流方向的机会，尤其希望加入能从真实业务问题出发、快速做原型并到现场验证的团队。
+！！！本菜鸡在找 AI 产品与 Agent 工作流方向的机会，尤其希望加入那种超多懂AI Native的高手😭、能从真实业务问题出发、快速做原型并到现场验证的团队。！！！
+
+Note：这个agent的闭环maybe跑起来了，但是感觉任何好多不足，期待大佬指点一下🥺
